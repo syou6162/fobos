@@ -19,11 +19,12 @@ void add_training_example(FOBOS& fobos, const std::string& training_filename) {
 
 void run(FOBOS& fobos, 
 		 const std::string& training_filename, 
-		 const std::string& test_filename) {
+		 const std::string& test_filename, 
+		 const int max_iter) {
   add_training_example(fobos, training_filename);
 
   std::cerr << "Finished readeing data..." << std::endl;
-  fobos.update(30);
+  fobos.update(max_iter);
 
   std::ifstream ifs(test_filename.c_str());
   int ok1 = 0, ok2 = 0;
@@ -50,7 +51,6 @@ void run(FOBOS& fobos,
 	  }
 	}
   }
-  std::cerr << test_filename << std::endl;
   std::cerr << "  accuracy:  " << ((double) ok1 + ok2) / (ok1 + ok2 + ng1 + ng2) << std::endl;
   std::cerr << "  precision: " << ((double) ok1) / (ok1 + ng1) << std::endl;
   std::cerr << "  recall:    " << ((double) ok1) / (ok1 + ng2) << std::endl;
@@ -63,8 +63,9 @@ int main(int argc, char **argv) {
   a.add<std::string>("classifier", 'c', "classifier type", false, "svm", 
 					 cmdline::oneof<std::string>("svm", "logistic"));
 
-  a.add<double>("eta", 'e', "eta ", false, 1.0);
-  a.add<double>("lambda", 'l', "eta ", false, 0.9);
+  a.add<double>("eta", 'e', "update step", false, 1.0);
+  a.add<double>("lambda", 'l', "regularization parameter", false, 0.9);
+  a.add<int>("max_iter", 'i', "number of max iteration", false, 10);
   a.add<bool>("vervose", 'v', "vervose option ", false, false);
   a.add("help", 0, "print this message");
 
@@ -81,10 +82,10 @@ int main(int argc, char **argv) {
 
   if (a.get<std::string>("classifier") == "svm") {
 	SVM svm(a.get<double>("eta"), a.get<double>("lambda"));
-	run(svm, a.get<std::string>("train"), a.get<std::string>("test"));
+	run(svm, a.get<std::string>("train"), a.get<std::string>("test"), a.get<int>("max_iter"));
   } else {
 	Logistic logistic(a.get<double>("eta"), a.get<double>("lambda"));
-	run(logistic, a.get<std::string>("train"), a.get<std::string>("test"));
+	run(logistic, a.get<std::string>("train"), a.get<std::string>("test"), a.get<int>("max_iter"));
   }
   return 0;
 };
