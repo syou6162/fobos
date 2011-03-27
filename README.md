@@ -1,5 +1,5 @@
 # FOBOS
-	Implementation of Support Vector Machine with L1 regularization and Logistic Regression with L1. Optimization algorithm is FOBOS(Forward-Backward Splitting).
+Implementation of Support Vector Machine with L1 regularization and Logistic Regression with L1. Optimization algorithm is FOBOS(Forward-Backward Splitting).
 
 # Usage
 	./wscript configure
